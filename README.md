@@ -43,7 +43,6 @@
 ### Media Handling
 
 - 📷 **Pillow** — For image processing
-- 🧹 **django-cleanup** — To auto-delete unused media files
 - 🧩 **django-crispy-forms** — For styled form layouts
 - 🎛 **django-widget-tweaks** — For custom form UI
 
@@ -53,8 +52,7 @@
 
 Users can upload photos for:
 - Event documentation
-- Proof of donation delivery
-- Campaign posters
+- Product preview
 
 Ensure the following settings are added to `settings.py`:
 
