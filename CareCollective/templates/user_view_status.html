@@ -1,0 +1,229 @@
+<!---->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Status</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <div class="search-bar d-flex">
+                    <form action="{% url 'search' %}" method="POST" class="d-flex">
+                        {% csrf_token %}
+                        <input class="form-control search-input" type="search" name="searched" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-light ml-2" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'user_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Donors Icon -->
+                 <div class="nav-item dropdown ml-3">
+                    <a class="nav-link" href="#" id="donorsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-hands-helping"></i> Donors
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="donorsDropdown">
+                        {% for donor in donors %}
+                        <!-- Use the donor's Donor_Id to create a link to their donor_details_page -->
+                        <a class="dropdown-item" href="{% url 'donor_details_page' donor.Donor_Id %}">{{ donor.UID.Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item">
+                    <a href="{% url 'user_dashboard' %}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'user_chat_list' %}" class="nav-link">Chat</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Orders
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'user_view_status' %}">Check Order Status </a>
+                        <a class="dropdown-item" href="{% url 'user_request_view' %}" >Applied Order Requests</a>
+                    </div>
+                </li>
+                <!--<li class="nav-item">
+                    <a href="{% url 'notifications' %}" class="nav-link">Notifications</a>
+                </li>-->
+                <li class="nav-item">
+                    <a href="{% url 'user_leave_comment' %}" class="nav-link">Leave A Comment</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+
+        <div class="row justify-content-center align-items-center mt-5 pt-5">
+            <div class="col-md-6 d-flex justify-content-center">
+                <div class="box notice-board">
+                    <h4>Order Status</h4>
+                    {% if messages %}
+                     <div class="alert alert-success">
+                        {% for message in messages %}
+                           {{ message }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Item Image</th>
+                                <th>Item Name</th>
+                                <th>Quantity Requested</th>
+                                <th>Status</th>
+                                <th>Request Details</th>
+                                <th>Action</th>
+                                <th>Leave A Comment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for request in requests %}
+                            <tr>
+                                <td><img src="{{ request.Item_Id.Image1.url }}" alt="Item Image" class="img-thumbnail" width="100"></td>
+                                <td>{{ request.Item_Id.Item_Name }}</td>
+                                <td>{{ request.Quantity }}</td>
+                                <td>{{ request.Status }}</td>
+                                <td>
+                                    <a href="#" class="open-modal" 
+                                        data-donor="{{ request.Donor_Id.UID.Name }}" 
+                                        data-urgency="{{ request.Urgency }}"
+                                        data-reason="{{ request.Reason }}"
+                                        data-request-date="{{ request.Request_Date }}"
+                                        data-toggle="tooltip" title="View Details">
+                                        <i class="fas fa-search"></i> <!-- Magnifying glass icon -->
+                                    </a>
+                                </td>
+                                <td>
+                                    {% if request.Status == 'Pending' %}
+                                    <a href="{% url 'delete_order_request' request.Request_Id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this request?');">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    {% else %}
+                                    <!-- No delete button for approved/rejected requests -->
+                                    <p style="color:red;"><b>{{ request.Status }}</b></p>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if request.Status == 'Approved' %}
+                                    <a href="{% url 'leave_comment' request.Donor_Id.Donor_Id %}">
+                                        Leave A Comment
+                                    </a>
+                                    {% else %}
+                                    <p style="color: gray;">Not Approved</p>
+                                    {% endif %}
+                                </td>
+                                
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="userRequestModal" tabindex="-1" role="dialog" aria-labelledby="userRequestModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userRequestModalLabel">User Request Details</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Donor Name:</strong> <span id="modal-donor-name"></span></p>
+                    <p><strong>Urgency:</strong> <span id="modal-urgency"></span></p>
+                    <p><strong>Reason:</strong> <span id="modal-reason"></span></p>
+                    <p><strong>Request Date:</strong> <span id="modal-request-date"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    <script>
+    $(document).ready(function(){
+        // When the request details icon is clicked
+        $('.open-modal').click(function(e){
+            e.preventDefault();
+
+            // Get data attributes from the clicked link
+            var donorName = $(this).data('donor');
+            var urgency = $(this).data('urgency');
+            var reason = $(this).data('reason');
+            var requestDate = $(this).data('request-date');
+
+            // Set the modal fields with the corresponding data
+            $('#modal-donor-name').text(donorName);
+            $('#modal-urgency').text(urgency);
+            $('#modal-reason').text(reason);
+            $('#modal-request-date').text(requestDate);
+
+            // Show the modal
+            $('#userRequestModal').modal('show');
+        });
+    });
+    function confirmDelete(itemId) {
+        var confirmation = confirm("Are you sure you want to delete this item?");
+        if (confirmation) {
+            window.location.href = '/delete-item/' + itemId + '/';
+        }
+    }
+    </script>
+</body>
+</html>

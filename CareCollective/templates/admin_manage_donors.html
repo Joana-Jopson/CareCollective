@@ -1,0 +1,151 @@
+<!--admin_manage_user.html-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Donors</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="#">Edit Profile</a>
+                        <a class="dropdown-item" href="#">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'user_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Donors Icon -->
+                 <div class="nav-item dropdown ml-3">
+                    <a class="nav-link" href="#" id="donorsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-hands-helping"></i> Donors
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="donorsDropdown">
+                        {% for donor in donors %}
+                        <!-- Use the donor's Donor_Id to create a link to their donor_details_page -->
+                        <a class="dropdown-item" href="{% url 'donor_details_page' donor.Donor_Id %}">{{ donor.UID.Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item">
+                    <a href="{% url 'admin_dashboard' %}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Orders
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'admin_order_status_view' %}">Order Status </a>
+                        <a class="dropdown-item" href="{% url 'admin_manage_items' %}">Block Items </a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'manage_category_requests' %}" class="nav-link">Category Requests</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Manage Comments</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Users
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'admin_manage_users'%}">Manage Users </a>
+                        <a class="dropdown-item" href="{% url 'admin_manage_donors' %}">Manage Donors </a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="mt-5 col-md-9 main-content"> 
+            <h4 style="text-align: center; padding-top: 20px;">Manage Donors</h4>
+            <br>
+        
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>User Name</th>
+                        <th>Date Of Join</th>
+                        <th>Number of Donations</th>
+                        <th>Prefered Categories</th>
+                        <th>Status</th>
+                        {% if admin.Role == 'Super Admin' %}
+                            <th>Block</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for donor in donors %}
+                    <tr>
+                        <td>{{ donor.UID.Name }}</td>
+                        <td>{{ donor.UID.Date_Of_Join }}</td>
+                        <td>{{ donor.Donation_History_Count }}</td>
+                        <td>{{ donor.Preferred_Donation_Categories }}</td>
+                        <td>{{ donor.UID.Status }}</td>
+                        {% if admin.Role == 'Super Admin' %}
+                        <td>
+                            {% if donor.UID.Status != 'Blocked' %}
+                                <a href="{% url 'block_donor' donor.UID.UID %}" class="btn btn-danger">
+                                    <i class="fas fa-ban"></i> Block
+                                </a>
+                            {% else %}
+                                <a href="{% url 'unblock_donor' donor.UID.UID %}" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Unblock
+                                </a>
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

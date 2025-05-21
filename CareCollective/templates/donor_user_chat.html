@@ -1,0 +1,132 @@
+<!--donor_user_chat.html-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="#">Edit Profile</a>
+                        <a class="dropdown-item" href="#">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'donor_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item">
+                    <a href="{% url 'donor_dashboard' %}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'donor_chat_list' %}" class="nav-link">Chat</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'add_category' %}">New Category</a>
+                        <a class="dropdown-item" href="{% url 'donor_view_category_request' %}">My Requests</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        New Items
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'add_item' %}">Add New Item</a>
+                        <a class="dropdown-item" href="{% url 'list_donated_items' %}">List of Donated Items</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'donor_manage_requests' %}" class="nav-link">User Requests</a>
+                </li>
+                <!--<li class="nav-item">
+                    <a href="{% url 'notifications' %}" class="nav-link">Notifications</a>
+                </li>-->
+                <li class="nav-item">
+                    <a href="{% url 'donor_comments_view' %}" class="nav-link">Leave A Comment</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+
+        <!---Main Content-->
+        <div class="mt-5 col-md-9 main-content"> 
+            <h4 style="text-align: center; padding-top: 20px;">{{user.Name}}</h4>
+            <br>
+    
+            <div class="chat-box border p-3 mb-3" style="height: 300px; overflow-y: scroll;">
+                {% for message in chat_messages %}
+                <div class="message">
+                    {% if message.Sent_By == donor.Donor_Id %}
+                    <strong>{{ donor.UID.Name }} (Me):</strong>
+                    {% else %}
+                    <strong>{{ user.Name }}:</strong> 
+                    {% endif %}
+                    <span>{{ message.Content }}</span>
+                    <small class="text-muted">{{ message.Message_Date }}</small>
+                </div>
+                <hr>
+                {% empty %}
+                <p>No messages yet. Start a conversation!</p>
+                {% endfor %}
+            </div>
+    
+            <!-- Form to send a new message -->
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="message_content">Your Message:</label>
+                    <textarea id="message_content" name="message_content" class="form-control" rows="3" placeholder="Type your message here..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

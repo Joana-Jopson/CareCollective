@@ -1,0 +1,177 @@
+<!--user_comments.html-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave A Comment</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="#">Edit Profile</a>
+                        <a class="dropdown-item" href="#">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'user_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Donors Icon -->
+                 <div class="nav-item dropdown ml-3">
+                    <a class="nav-link" href="#" id="donorsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-hands-helping"></i> Donors
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="donorsDropdown">
+                        {% for donor in donors %}
+                        <!-- Use the donor's Donor_Id to create a link to their donor_details_page -->
+                        <a class="dropdown-item" href="{% url 'donor_details_page' donor.Donor_Id %}">{{ donor.UID.Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        {% if is_admin %}
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link">Home</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Orders</a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'admin_order_status_view' %}">Order Status</a>
+                        <a class="dropdown-item" href="{% url 'admin_manage_items' %}">Block Items</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="{% url 'manage_category_requests' %}" class="nav-link">Category Requests</a></li>
+                <li class="nav-item"><a href="{% url 'admin_comment_list' %}" class="nav-link">Manage Comments</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Users</a>
+                    <div class="dropdown-menu" aria-labelledby="usersDropdown">
+                        <a class="dropdown-item" href="{% url 'admin_manage_users' %}">Manage Users</a>
+                        <a class="dropdown-item" href="{% url 'admin_manage_donors' %}">Manage Donors</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Sign Out</a></li>
+            </ul>
+        </div>
+
+        {% else %}
+        <div id="sidebar" class="col-md-3 sidebar">
+        <ul class="nav flex-column mt-4">
+            <li class="nav-item">
+                <a href="{% url 'user_dashboard' %}" class="nav-link">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'user_chat_list' %}" class="nav-link">Chat</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Orders
+                </a>
+                <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                    <a class="dropdown-item" href="{% url 'user_view_status' %}">Check Order Status</a>
+                    <a class="dropdown-item" href="{% url 'user_request_view' %}">Applied Order Requests</a>
+                </div>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Notifications</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'user_leave_comment' %}" class="nav-link">Leave A Comment</a>
+            </li>
+            <li class="nav-item">
+                <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+            </li>
+        </ul>
+      </div>
+      {% endif %}
+
+
+        <!-- Main Content -->
+        <div class="mt-5 col-md-9 main-content"> 
+            <!-- Donor Comments Section -->
+            <h3 style="text-align: center; padding-top: 20px;">Comments for {{ donor.UID.Name }}</h3>
+            <br>
+            <!-- Comment Form -->
+            {% if not is_admin %}
+            <form method="POST" action="{% url 'leave_comment' donor.Donor_Id %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="comment">Leave a Comment</label>
+                    <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Comment</button>
+            </form>
+            {% endif %}
+    
+            <!-- Display Comments -->
+            <div class="mt-5">
+                <h4>All Comments</h4>
+                {% if comments %}
+                    <ul class="list-group">
+                        {% for comment in admin_comments %}
+                            <li class="list-group-item">
+                                {% if comment.Status != 'Blocked' %}
+                                  <strong>{{ comment.UID.Name }}</strong> - {{ comment.Comment_Date|date:"F d, Y" }}<br>
+                                  {{ comment.Comment }} 
+                                  {% if is_admin %}
+                                    <a href="{% url 'block_comment' comment.Comment_Id donor.Donor_Id %}" class="block-icon">Block</a>
+                                  {% endif %}
+
+                                {% else %}
+                                   {% if is_admin %}
+                                     <strong>{{ comment.UID.Name }}</strong> - {{ comment.Comment_Date|date:"F d, Y" }}<br>
+                                     {{ comment.Comment }} 
+                                     <p style="color: red;">
+                                        Blocked
+                                        <a href="{% url 'unblock_comment' comment.Comment_Id donor.Donor_Id %}" class="unblock-icon">Unblock</a>
+                                     </p>
+                                    {% endif %}
+                               {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No comments yet. Be the first to leave a comment!</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

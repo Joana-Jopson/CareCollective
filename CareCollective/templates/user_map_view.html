@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Map</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Select Your Location</h2>
+        
+        <!-- Form to select state and city -->
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="state">State</label>
+                <select class="form-control" id="state" name="state">
+                    {% for state in states %}
+                        <option value="{{ state.State_Id }}">{{ state.State_Name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="city">City/Area</label>
+                <input type="text" class="form-control" id="city" name="city" placeholder="Enter city or area name">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Find Location</button>
+        </form>
+
+        <!-- Render the map -->
+        <div class="mt-4">
+            <h3>Your Selected Location:</h3>
+            <div id="map">
+                {{ map|safe }}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and Folium rendering -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

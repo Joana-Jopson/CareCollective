@@ -1,0 +1,743 @@
+/*login*/
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f2f5;
+}
+
+.login-box {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    border: 2px solid #ddd; /* Added border around the login box */
+    text-align: center; /* Center elements within the login box */
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.login-box .form-group {
+    margin-bottom: 20px;
+}
+
+.login-box .form-control {
+    height: 50px;
+    border: none;
+    border-bottom: 2px solid #ddd;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 16px;
+    text-align: center; /* Center the text inside input fields */
+}
+
+.login-box .form-control:focus {
+    border-bottom: 2px solid #5cb85c;
+}
+
+.login-box .btn {
+    width: 100%;
+    background-color: #5cb85c;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    height: 50px;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.login-box .btn:hover {
+    background-color: #4cae4c;
+}
+
+.signup-options {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.signup-options a {
+    display: inline-block;
+    margin: 5px;
+    font-size: 16px;
+    text-decoration: none;
+    color: #5cb85c;
+}
+
+.signup-options a:hover {
+    text-decoration: underline;
+}
+
+
+/*-----------------------------POP UP BOX MSG-----------------------------*/
+/* CSS for message box */
+/* Popup Box Styles */
+.popup-success, .popup-error {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 9999;
+    text-align: center;
+    display: none; /* Initially hidden */
+}
+
+.popup-success .popup-content, .popup-error .popup-content {
+    position: relative;
+    padding: 15px;
+}
+
+.popup-success i, .popup-error i {
+    font-size: 50px;
+    margin-bottom: 10px;
+}
+
+.popup-success {
+    border-top: 5px solid #28a745;
+}
+
+.popup-success i {
+    color: #28a745;
+}
+
+.popup-error {
+    border-top: 5px solid #dc3545;
+}
+
+.popup-error i {
+    color: #dc3545;
+}
+
+.popup-content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.popup-content p {
+    font-size: 16px;
+}
+
+.popup-content .close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+
+/*------------------------------------------user dashboard------------------------------*/
+/* Colors */
+/* Colors */
+/* Colors */
+:root {
+    --orange: #d9a941;
+    --dark-blue: #20212B;
+    --gray: #777777;
+}
+
+/* Navbar styles */
+.navbar-custom {
+    background-color: var(--dark-blue);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+}
+
+.navbar-brand {
+    color: #fdf9f9;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.navbar-icons .nav-link {
+    color: #fff;
+    font-size: 1.2rem;
+    margin: 0 20px;
+}
+
+.logout-icon {
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.search-input {
+    width: 200px;
+    margin-right: 10px;
+}
+
+.search-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+/* Sidebar styles */
+.sidebar {
+    height: 100vh;
+    background-color: var(--dark-blue);
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 200px;
+    padding: 20px;
+    color: #fff;
+}
+
+.sidebar .profile-section {
+    margin-bottom: 20px;
+}
+
+.sidebar .profile-section img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.sidebar .nav-link {
+    font-size: 18px;
+    padding: 15px 20px;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.sidebar .nav-link:hover {
+    background-color: var(--gray);
+}
+
+/* Main content styles */
+.main-content {
+    margin-left: 270px;
+    padding: 20px;
+}
+
+h2 {
+    font-weight: 600;
+}
+
+/* Box styles for Notice Board */
+.box {
+    background-color: var(--gray);
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.box h4 {
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.notice-board {
+    background-color: #f9f9f9;
+}
+
+/* Flexbox centering */
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* Profile Icon Styling */
+.profile-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+/* Dropdown Menu Styling */
+/* Smooth Dropdown Transition */
+.dropdown-menu {
+    display: none;
+    opacity: 0;
+}
+
+.dropdown-menu.show {
+    display: block;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+.dropdown-item {
+    color: var(--dark-blue);
+}
+
+.dropdown-item:hover {
+    background-color: var(--gray);
+    color: #fff;
+}
+/*-------------------------------donor details page-----------------------*/
+/* Custom styles for donor details and items section */
+
+/* Ensure sidebar doesn't overlap the content */
+.main-content {
+    margin-left: 270px; /* Sidebar width */
+    padding: 20px;
+}
+
+/* Center the donor details card */
+.card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: 0.3s;
+    max-width: 500px; /* Set a max-width for the card */
+    margin: 10px auto; /* Center it horizontally */
+    background-color: #f9f9f9;
+    border-radius: 15px;
+    padding: 20px;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Design improvements for the card content */
+.card-header h3 {
+    font-weight: bold;
+    font-size: 1.8em;
+    text-align: center;
+    color: var(--orange);
+}
+
+.card-body p {
+    font-size: 1.1em;
+    line-height: 1.5;
+    color: var(--gray);
+}
+
+.card-body {
+    min-height: 150px; /* Ensure consistent height */
+}
+
+
+/* Center the Items section heading */
+h4 {
+    text-align: center;
+    font-size: 1.6em;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Style for individual item cards */
+.item-card {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    transition: 0.3s;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    padding: 15px;
+}
+
+.item-card img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.item-card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Button for requesting items */
+.btn-primary {
+    background-color: var(--orange);
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+}
+
+.btn-primary:hover {
+    background-color: #b68836;
+}
+
+/* Ensure that the main content does not overlap with the sidebar */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+    }
+
+    .sidebar {
+        position: relative;
+        height: auto;
+        width: 100%;
+    }
+    .sidebar, .filter-sidebar {
+        display: none; /* Hide sidebars on small screens */
+    }
+
+    .card {
+        width: 100%; /* Full width for cards on small screens */
+    }
+}
+
+
+
+
+/*-------------------------------end of donor details page-----------------------*/
+/*--------------------------form design---------------------------------------*/
+ /* Form Card Styles */
+ .form-card {
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.form-card:hover {
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+}
+
+/* Header Style */
+h2 {
+    color: #4a90e2;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+/* Form Styles */
+.form-group label {
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.form-control {
+    border-radius: 10px;
+    border: 2px solid #4a90e2;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #f39c12;
+    box-shadow: 0 0 8px rgba(243, 156, 18, 0.5);
+}
+
+.form-control-file {
+    border: 2px dashed #4a90e2;
+    padding: 10px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.form-control-file:hover {
+    background-color: #f7f9fc;
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: #f39c12;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #e67e22;
+}
+
+/* Secondary Button Styles */
+.btn-block {
+    background-color: #3498db;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.btn-block:hover {
+    background-color: #2980b9;
+}
+
+/* Miscellaneous Styles */
+.card-body {
+    color: #2c3e50;
+}
+
+/* File Input Styles */
+.form-control-file input {
+    display: none;
+}
+
+.form-control-file label {
+    cursor: pointer;
+    padding: 8px 16px;
+    background-color: #4a90e2;
+    color: #fff;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.form-control-file label:hover {
+    background-color: #2980b9;
+}
+
+/* Custom Text Color for Inputs */
+input::placeholder,
+textarea::placeholder {
+    color: #bdc3c7;
+}
+
+.form-group select {
+    border-radius: 10px;
+    border: 2px solid #4a90e2;
+    color: #2c3e50;
+}
+/*--------------------------end of form design-------------------------------------*/
+
+/*list items*/
+.category-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: var(--orange);
+}
+/* Buttons */
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+    transition: background-color 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-outline-danger {
+    border-color: #dc3545;
+    color: #dc3545;
+    transition: background-color 0.3s ease;
+}
+
+.btn-outline-danger:hover {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Centering Category Section */
+.category-section {
+    margin-bottom: 40px;
+} 
+
+/* Action icons for edit and delete */
+.action-icons {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 10px;
+}
+
+.action-icons a {
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.action-icons a:hover {
+    color: #007bff;
+}
+/*-------------------------user_items_based category---------------------*/
+.navbars-light {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-nav .nav-item .dropdown-menu {
+    border-radius: 10px;
+    margin-top: 60px; 
+}
+
+.navbar-nav .nav-item .dropdown-item:hover {
+    background-color: #f39c12;
+    color: #fff;
+}
+
+/* Filter Sidebar styles */
+.filter-sidebar 
+{
+            height: 100vh;
+            background-color: #f8f9fa; /* Light background */
+            position: fixed;
+            top: 60px; /* Space from navbar */
+            left: 200px; /* Right next to the main sidebar */
+            width: 220px; /* Width of the filter sidebar */
+            padding: 20px;
+            color: #333;
+            overflow-y: auto; /* Scroll if content overflows */
+}
+
+        /* Dropdown styles */
+.dropdown-menu 
+{
+        max-height: 200px; /* Limit height for scrolling */
+        overflow-y: auto; /* Enable vertical scroll */
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--orange);
+    border-color: var(--orange);
+}
+
+.pagination .page-link {
+    color: var(--dark-blue);
+}
+/*----------------------------admin_manage_category----------------------*/
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.btn-success, .btn-danger {
+    margin-right: 10px;
+}
+
+.btn-danger i {
+    color: white;
+}
+
+/*------------------------------user_item_complete_details-------------------------*/
+/* Carousel styles */
+.carousel-item img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.carousel {
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.item-details {
+    text-align: center;
+    padding: 20px;
+}
+
+.item-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.donor-name {
+    font-size: 1rem;
+    color: var(--gray);
+}
+
+.item-description {
+    font-size: 1rem;
+    margin-top: 15px;
+}
+
+.item-quantity {
+    font-size: 1rem;
+    color: var(--orange);
+}
+
+.expiry-date {
+    color: var(--gray);
+    font-style: italic;
+    margin-top: 10px;
+}
+/* Request Button */
+.request-btn {
+    background-color: var(--orange);
+    color: white;
+    font-size: 1rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.request-btn:hover {
+    background-color: darken(var(--orange), 10%);
+}
+
+.card-custom {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border: none;
+    background-color: #f9f9f9;
+    padding: 20px;
+    max-width: 1000px;
+    margin: 0 auto; /* Center horizontally */
+}
+
+.carousel-inner img {
+    max-height: 400px;
+    object-fit: contain; /* Ensure the image fits inside */
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #000; /* Make icons visible */
+}
+
+.carousel {
+    margin-bottom: 30px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0;
+    }
+}
+/*-------------------------notifications------------------------------*/
+.notice-board {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.notice-board h4 {
+    color: #333;
+}
+
+.list-group-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: none;
+    background-color: #f1f1f1;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.list-group-item .text-muted {
+    font-size: 0.85em;
+}
+
+
+
+
+
+
+

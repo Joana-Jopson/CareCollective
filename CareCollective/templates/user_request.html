@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Request</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'user_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Donors Icon -->
+                <div class="nav-item dropdown ml-3">
+                    <a class="nav-link" href="#" id="donorsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-hands-helping"></i> Donors
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="donorsDropdown">
+                        {% for donor in donors %}
+                        <!-- Use the donor's Donor_Id to create a link to their donor_details_page -->
+                        <a class="dropdown-item" href="{% url 'donor_details_page' donor.Donor_Id %}">{{ donor.UID.Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item">
+                    <a href="{% url 'user_dashboard' %}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'user_chat_list' %}" class="nav-link">Chat</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Orders
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'user_view_status' %}">Check Order Status </a>
+                        <a class="dropdown-item" href="{% url 'user_request_view' %}" >Applied Order Requests</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'user_leave_comment' %}" class="nav-link">Leave A Comment</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+         <br>
+        <div class="main-content">
+            <div class="container mt-5">
+                <div class="card form-card">
+                    <div class="card-body">
+                        <h2 class="text-center">Dontion Request</h2>
+                        <form action="{% url 'add_request' item.Item_Id %}" method="POST" enctype="multipart/form-data" class="mt-4">
+                            {% csrf_token %}
+                            
+                            <!-- Quantity Field -->
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" max="{{ item.Quantity }}" required>
+                            </div>
+                            
+                            <!-- Urgency Field -->
+                            <div class="form-group">
+                                <label for="urgency">Urgency</label>
+                                <select class="form-control" id="urgency" name="urgency" required>
+                                    <option value="" disabled selected>How urgent is it?</option>
+                                    <option value="Very Urgent">Very Urgent</option>
+                                    <option value="Urgent">Urgent</option>
+                                    <option value="Low Urgency">Low Urgency</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Reason Field -->
+                            <div class="form-group">
+                                <label for="reason">Enter the reason for the request</label>
+                                <input type="text" class="form-control" id="reason" name="reason" placeholder="Reason" required>
+                            </div>
+                            
+                            <!-- Hidden Fields -->
+                            <input type="hidden" name="request_date" value="{{ request_date }}">  <!-- Date set to submission day -->
+                            <input type="hidden" name="status" value="Pending"> <!-- Status is set to Pending -->
+                        
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary btn-block">Submit Request</button>
+                        </form>
+                        
+                        {% if success %}
+                        <div id="popup-box" class="popup-success">
+                            <div class="popup-content">
+                                <span class="close" onclick="closePopup()">&times;</span>
+                                <i class="fa fa-check-circle"></i>
+                                <h2>Successful</h2>
+                                <p>{{ success }}</p>
+                            </div>
+                        </div>
+                        {% elif error %}
+                        <div id="popup-box" class="popup-error">
+                            <div class="popup-content">
+                                <span class="close" onclick="closePopup()">&times;</span>
+                                <i class="fa fa-times-circle"></i>
+                                <h2>Unsuccessful</h2>
+                                <p>{{ error }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+
+</body>
+</html>

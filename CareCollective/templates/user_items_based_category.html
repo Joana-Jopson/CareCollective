@@ -1,0 +1,320 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Items</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #d9a941;
+            --dark-blue: #20212B;
+            --gray: #777777;
+        }
+
+        /* Navbar styles */
+        .navbar-custom {
+            background-color: var(--dark-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+
+        .navbar-brand {
+            color: #fdf9f9;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .navbar-icons .nav-link {
+            color: #fff;
+            font-size: 1.2rem;
+            margin: 0 20px;
+        }
+
+        .logout-icon {
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        /* Sidebar styles */
+        .sidebar {
+            height: 100vh;
+            background-color: var(--dark-blue);
+            position: fixed;
+            top: 60px; /* Space from navbar */
+            left: 0;
+            width: 200px;
+            padding: 20px;
+            color: #fff;
+        }
+
+        /* Filter Sidebar styles */
+        .filter-sidebar {
+            height: 100vh;
+            background-color: #f8f9fa; /* Light background */
+            position: fixed;
+            top: 60px; /* Space from navbar */
+            left: 200px; /* Right next to the main sidebar */
+            width: 220px; /* Width of the filter sidebar */
+            padding: 20px;
+            color: #333;
+            overflow-y: auto; /* Scroll if content overflows */
+        }
+
+        /* Dropdown styles */
+        .dropdown-menu {
+            max-height: 200px; /* Limit height for scrolling */
+            overflow-y: auto; /* Enable vertical scroll */
+        }
+
+        /* Main content styles */
+        .main-content {
+            margin-left: 420px; /* Space for both sidebars */
+            padding: 20px;
+        }
+
+        h2 {
+            font-weight: 600;
+        }
+
+        /* Card styles */
+        .card {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+            transition: 0.3s;
+            max-width: 300px; /* Set a max-width for the card */
+            margin: 10px auto; /* Center it horizontally */
+            background-color: #f9f9f9;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .card-body {
+            min-height: 150px; /* Ensure consistent height */
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Flexbox centering */
+        .row {
+            display: flex;
+            flex-wrap: wrap; /* Ensure items wrap */
+            justify-content: center; /* Center items */
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0; /* Remove margin for small screens */
+            }
+
+            .sidebar, .filter-sidebar {
+                display: none; /* Hide sidebars on small screens */
+            }
+
+            .card {
+                width: 100%; /* Full width for cards on small screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                    </div>
+                </div>
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <div class="ml-auto d-flex align-items-center">
+                {% if not is_admin %}
+                <div class="search-bar d-flex">
+                    <form action="{% url 'search' %}" method="POST" class="d-flex">
+                        {% csrf_token %}
+                        <input class="form-control search-input" type="search" name="searched" placeholder="Search" aria-label="Search">
+                        <button class="btn btn-outline-light ml-2" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'user_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown ml-3">
+                    <a class="nav-link" href="#" id="donorsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-hands-helping"></i> Donors
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="donorsDropdown">
+                        {% for donor in donors %}
+                        <a class="dropdown-item" href="{% url 'donor_details_page' donor.Donor_Id %}">{{ donor.UID.Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            {% if is_admin %}
+            <div id="sidebar" class="col-md-3 sidebar">
+                <ul class="nav flex-column mt-4">
+                    <li class="nav-item">
+                        <a href="{% url 'admin_dashboard' %}" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Orders
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                            <a class="dropdown-item" href="#">Order Status </a>
+                            <a class="dropdown-item" href="#">Block Items </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'manage_category_requests' %}" class="nav-link">Category Requests</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Manage Comments</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Users
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="usersDropdown">
+                            <a class="dropdown-item" href="{% url 'admin_manage_users' %}">Manage Users</a>
+                            <a class="dropdown-item" href="{% url 'admin_manage_donors' %}">Manage Donors</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+            {% else %}
+            <div id="sidebar" class="col-md-3 sidebar">
+                <ul class="nav flex-column mt-4">
+                    <li class="nav-item">
+                        <a href="{% url 'user_dashboard' %}" class="nav-link">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'user_chat_list' %}" class="nav-link">Chat</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Orders
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                            <a class="dropdown-item" href="{% url 'user_view_status' %}">Check Order Status </a>
+                            <a class="dropdown-item" href="{% url 'user_request_view' %}" >Applied Order Requests</a>
+                        </div>
+                    </li>
+                   <!-- <li class="nav-item">
+                        <a href="#" class="nav-link">Notifications</a>
+                    </li>-->
+                    <li class="nav-item">
+                        <a href="{% url 'user_leave_comment' %}" class="nav-link">Leave A Comment</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                    </li>
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Filter Sidebar -->
+            <div class="filter-sidebar">
+                <h5>Filter By:</h5>
+                <ul class="nav flex-column mt-5 pt-3">
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="donorDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Donors
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="donorDropdown">
+                            {% for donor in donors %}
+                            <a class="dropdown-item" href="?donor={{ donor.Donor_Id }}">{{ donor.UID.Name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="stateDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            State
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="stateDropdown">
+                            {% for state in states %}
+                            <a class="dropdown-item" href="?state={{ state.State_Id }}">{{ state.State_Name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="quantityDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Quantity
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="quantityDropdown">
+                            <a class="dropdown-item" href="?quantity=1">1 or more</a>
+                            <a class="dropdown-item" href="?quantity=5">5 or more</a>
+                            <a class="dropdown-item" href="?quantity=10">10 or more</a>
+                        </div>
+                    </div>
+                </ul>
+            </div>
+
+            <!-- Main Content Section -->
+            <div class="mt-4 col-md-9 main-content">
+                <h4 style="text-align: center;">{{ category.Category_Name }}</h4><br>
+                <div class="row">
+                    {% for item in items %}
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="{{ item.Image1.url }}" class="card-img-top" alt="{{ item.Item_Name }}" style="height: 200px; object-fit: cover;">
+                            <div class="card-body">
+                                <a href="{% url 'item_complete_details' item.Item_Id %}" style="text-decoration: none; color: inherit;">
+                                    <h5 class="card-title">{{ item.Item_Name }}</h5>
+                                </a>
+                                <p class="card-text">Quantity: {{ item.Quantity }}</p>
+                                {% if not is_admin %}
+                                <a href="{% url 'add_request' item.Item_Id %}" class="btn btn-primary">Request</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

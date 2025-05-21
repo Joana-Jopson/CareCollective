@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Request</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="#">Edit Profile</a>
+                        <a class="dropdown-item" href="#">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'donor_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item">
+                    <a href="{% url 'donor_dashboard' %}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'donor_chat_list' %}" class="nav-link">Chat</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'add_category' %}">New Category</a>
+                        <a class="dropdown-item" href="{% url 'donor_view_category_request' %}">My Requests</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        New Items
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'add_item' %}">Add New Item</a>
+                        <a class="dropdown-item" href="{% url 'list_donated_items' %}">List of Donated Items</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'donor_manage_requests' %}" class="nav-link">User Requests</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">View Comments</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+        <!-- Main Content -->
+         <br>
+        <div class="main-content">
+            <div class="container mt-5">
+                <div class="card form-card">
+                    <div class="card-body">
+                        <h2 class="text-center">Update Item</h2>
+                        <form action="{% url 'donor_items_update' item.Item_Id %}" method="POST" enctype="multipart/form-data" class="mt-4">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="item_name">Item Name</label>
+                                <input type="text" class="form-control" id="item_name" name="item_name" value="{{ item.Item_Name }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select class="form-control" id="category" name="category" required>
+                                    <option value="" disabled>Select a category</option>
+                                    {% for category in categories %}
+                                        <option value="{{ category.Category_Id }}" {% if category.Category_Id == item.Category_Id.Category_Id %}selected{% endif %}>{{ category.Category_Name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Item Description</label>
+                                <textarea class="form-control" id="description" name="description" rows="3" required>{{ item.Item_Description }}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" class="form-control" id="quantity" name="quantity" value="{{ item.Quantity }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expiry_date">Expiry Date (Food Items Only)</label>
+                                <input type="date" class="form-control" id="expiry_date" name="expiry_date" value="{{ item.Expiry_Date|date:'Y-m-d' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="image1">Primary Image (Compulsory)</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="image1" name="image1">
+                                    <label class="custom-file-label" for="image1">{{ item.Image1.name }}</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="image2">Secondary Image (Optional)</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="image2" name="image2">
+                                    <label class="custom-file-label" for="image2">{{ item.Image2.name }}</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="image3">Tertiary Image (Optional)</label>
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="image3" name="image3">
+                                    <label class="custom-file-label" for="image3">{{ item.Image3.name }}</label>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block">Update</button>
+                        </form>
+                        
+                        
+                        {% if success %}
+                        <div id="popup-box" class="popup-success">
+                            <div class="popup-content">
+                                <span class="close" onclick="closePopup()">&times;</span>
+                                <i class="fa fa-check-circle"></i>
+                                <h2>Successful</h2>
+                                <p>{{ success }}</p>
+                            </div>
+                        </div>
+                        {% elif error %}
+                        <div id="popup-box" class="popup-error">
+                            <div class="popup-content">
+                                <span class="close" onclick="closePopup()">&times;</span>
+                                <i class="fa fa-times-circle"></i>
+                                <h2>Unsuccessful</h2>
+                                <p>{{ error }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+
+</body>
+</html>

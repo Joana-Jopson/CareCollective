@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'donor_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item">
+                    <a href="{% url 'donor_dashboard' %}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'donor_chat_list' %}" class="nav-link">Chat</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'add_category' %}">New Category</a>
+                        <a class="dropdown-item" href="{% url 'donor_view_category_request' %}">My Requests</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        New Items
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'add_item' %}">Add New Item</a>
+                        <a class="dropdown-item" href="{% url 'list_donated_items' %}">List of Donated Items</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'donor_manage_requests' %}" class="nav-link">User Requests</a>
+                </li>
+                <!--<li class="nav-item">
+                    <a href="{% url 'notifications' %}" class="nav-link">Notifications</a>
+                </li>-->
+                <li class="nav-item">
+                    <a href="{% url 'donor_comments_view' %}" class="nav-link">Leave A Comment</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Centered Notice Board -->
+        <!-- Notice Board -->
+<div class="row justify-content-center align-items-center mt-5 pt-5">
+    <div class="col-md-6 d-flex justify-content-center">
+        <div class="box notice-board">
+            <h4>Donor Details</h4>
+            {% if donor %}
+        <p><strong>Name:</strong> {{ donor.UID.Name }}</p>
+        <p><strong>Date of Join:</strong> {{ donor.UID.Date_Of_Join }}</p>
+        <p><strong>Username:</strong> {{ username }}</p>
+        <p><strong>Donation History Count:</strong> {{ donor.Donation_History_Count }}</p>
+        <p><strong>Last Donation Date:</strong> {{ donor.Last_Donation_Date }}</p>
+        <!----> <p><strong>Last Donation Category:</strong> {{ donor.Preferred_Donation_Categories }}</p>
+
+       {% else %}
+        <p>No donor details available.</p>
+    {% endif %}
+        </div>
+    </div>
+</div>
+<!-- Approved Requests Chart -->
+<div class="row justify-content-center align-items-center mt-5">
+    <div class="col-md-8">
+        <canvas id="approvedRequestsChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    const approvedRequestsData = {
+        labels: {{ chart_labels|safe }},
+        datasets: [{
+            label: 'Approved Requests',
+            data: {{ chart_data|safe }},
+            backgroundColor: 'rgba(75, 192, 192, 0.5)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1
+        }]
+    };
+
+    const config = {
+        type: 'bar',
+        data: approvedRequestsData,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    };
+
+    new Chart(
+        document.getElementById('approvedRequestsChart'),
+        config
+    );
+</script>
+
+
+    </div>
+    </body>
+</html>

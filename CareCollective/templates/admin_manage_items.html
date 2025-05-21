@@ -1,0 +1,193 @@
+<!--admin_manage_items.html-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <!--<a class="dropdown-item" href="#">Edit Profile</a>-->
+                        <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'user_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Donors Icon -->
+                 <div class="nav-item dropdown ml-3">
+                    <a class="nav-link" href="#" id="donorsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-hands-helping"></i> Donors
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="donorsDropdown">
+                        {% for donor in donors %}
+                        <!-- Use the donor's Donor_Id to create a link to their donor_details_page -->
+                        <a class="dropdown-item" href="{% url 'donor_details_page' donor.Donor_Id %}">{{ donor.UID.Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link">Home</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Orders</a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'admin_order_status_view' %}">Order Status</a>
+                        <a class="dropdown-item" href="{% url 'admin_manage_items' %}">Block Items</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="{% url 'manage_category_requests' %}" class="nav-link">Category Requests</a></li>
+                <li class="nav-item"><a href="{% url 'admin_comment_list' %}" class="nav-link">Manage Comments</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Users</a>
+                    <div class="dropdown-menu" aria-labelledby="usersDropdown">
+                        <a class="dropdown-item" href="{% url 'admin_manage_users' %}">Manage Users</a>
+                        <a class="dropdown-item" href="{% url 'admin_manage_donors' %}">Manage Donors</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Sign Out</a></li>
+            </ul>
+        </div>
+
+
+        <!-- Main Content -->
+        <div class="mt-4 col-md-9 main-content">
+            <h4 style="text-align: center;">All Items For Donation</h4><br>
+    
+            <!-- Table to show items -->
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Item Name</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>
+                            <img src="{{ item.Image1.url }}" alt="Item Image" width="100" height="100">
+                        </td>
+                        <td>{{ item.Item_Name }}</td>
+                        <td>{{ item.Category_Id.Category_Name }}</td>
+                        <td>
+                            <!-- View Icon: Lens -->
+                            <a href="#" class="text-primary" data-toggle="modal" data-target="#itemDetailsModal{{ item.Item_Id }}">
+                                <i class="fas fa-search"></i>
+                            </a>
+                            
+                            <!-- Block/Unblock Icon -->
+                            {% if item.Status == 'Active' %}
+                            <a href="{% url 'block_item' item.Item_Id %}" class="text-danger ml-2" onclick="return confirm('Are you sure you want to block this item?');">
+                                <i class="fas fa-ban"></i> Block
+                            </a>
+                            {% else %}
+                            <a href="{% url 'unblock_item' item.Item_Id %}" class="text-success ml-2">
+                                <i class="fas fa-check"></i> Unblock
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+    
+                    <!-- Modal for Item Details -->
+                    <div class="modal fade" id="itemDetailsModal{{ item.Item_Id }}" tabindex="-1" role="dialog" aria-labelledby="itemDetailsModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="itemDetailsModalLabel">Item Details</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <p><strong>Item Name:</strong> {{ item.Item_Name }}</p>
+                                    <p><strong>Donor Name:</strong> {{ item.Donor_Id.UID.Name }}</p>
+                                    <p><strong>Quantity:</strong> {{ item.Quantity }}</p>
+                                    {% if item.Expiry_Date %}
+                                    <p><strong>Expiry Date:</strong> {{ item.Expiry_Date }}</p>
+                                    {% endif %}
+                                    <p><strong>Description:</strong> {{ item.Item_Description }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </tbody>
+            </table>
+    
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center">
+                <nav aria-label="Page navigation">
+                    <ul class="pagination">
+                        {% if items.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ items.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% for page_num in items.paginator.page_range %}
+                        <li class="page-item {% if items.number == page_num %}active{% endif %}">
+                            <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
+                        </li>
+                        {% endfor %}
+                        {% if items.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ items.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+        
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+
+</body>
+</html>

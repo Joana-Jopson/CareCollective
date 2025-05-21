@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <!--<a class="dropdown-item" href="#">Edit Profile</a>-->
+                        <a class="dropdown-item" href="{% url 'change_password' %}">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'user_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Donors Icon -->
+                <div class="nav-item dropdown ml-3">
+                    <a class="nav-link" href="#" id="donorsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-hands-helping"></i> Donors
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="donorsDropdown">
+                        {% for donor in donors %}
+                        <a class="dropdown-item" href="{% url 'donor_details_page' donor.Donor_Id %}">{{ donor.UID.Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item"><a href="{% url 'admin_dashboard' %}" class="nav-link">Home</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Orders</a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'admin_order_status_view' %}">Order Status</a>
+                        <a class="dropdown-item" href="{% url 'admin_manage_items' %}">Block Items</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="{% url 'manage_category_requests' %}" class="nav-link">Category Requests</a></li>
+                <li class="nav-item"><a href="{% url 'admin_comment_list' %}" class="nav-link">Manage Comments</a></li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="usersDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Users</a>
+                    <div class="dropdown-menu" aria-labelledby="usersDropdown">
+                        <a class="dropdown-item" href="{% url 'admin_manage_users' %}">Manage Users</a>
+                        <a class="dropdown-item" href="{% url 'admin_manage_donors' %}">Manage Donors</a>
+                    </div>
+                </li>
+                <li class="nav-item"><a href="{% url 'logout' %}" class="nav-link">Sign Out</a></li>
+            </ul>
+        </div>
+
+        <!-- Dashboard Content -->
+        <div class="mt-5 col-md-9 main-content"> <br>
+            <div class="row mb-4">
+                <div class="col-md-4">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Registered Users</h5>
+                            <p class="card-text" style="color:#313e50;"><b>{{ registered_users }}</b></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Registered Donors</h5>
+                            <p class="card-text"style="color:#313e50;"><b>{{ registered_donors }}</b></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Donations</h5>
+                            <p class="card-text" style="color:#313e50;"><b>{{ total_donations }}</b></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donor Donations Table -->
+            <div class="mt-5 col-md-6 main-content"> 
+                <h4 style="text-align: center; padding-top: 20px;">Donors with Most Items For Donation</h4>
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>#.</th>
+                            <th>Donor's Name</th>
+                            <th>Total Donations</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donor in donors_donation_count %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ donor.UID.Name }}</td>
+                            <td>{{ donor.donation_count }}</td>
+                            <td>{{ donor.UID.Status }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pie Chart and Bar Chart -->
+            <div class="row mt-5">
+                <div class="col-md-6">
+                    <h4>Donations by Category</h4>
+                    <canvas id="categoryPieChart"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <h4>Donations by Donor Each Month</h4>
+                    <canvas id="monthlyDonationsBarChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+            <!-- Scripts for Charts -->
+            <script>
+                // Pie Chart: Donations per category
+                const categoryPieChartCtx = document.getElementById('categoryPieChart').getContext('2d');
+                const categoryPieChart = new Chart(categoryPieChartCtx, {
+                    type: 'pie',
+                    data: {
+                        labels: [
+                            {% for category in category_donations %}
+                                '{{ category.Item_Id__Category_Id__Category_Name }}',
+                            {% endfor %}
+                        ],
+                        datasets: [{
+                            label: 'Donations',
+                            data: [
+                                {% for category in category_donations %}
+                                    {{ category.donation_count }},
+                                {% endfor %}
+                            ],
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+                        }]
+                    },
+                });
+    
+                // Bar Chart: Donations by donor each month
+                const monthlyDonationsBarChartCtx = document.getElementById('monthlyDonationsBarChart').getContext('2d');
+                const monthlyDonationsBarChart = new Chart(monthlyDonationsBarChartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [
+                            {% for donation in monthly_donations %}
+                                '{{ donation.month }}',
+                            {% endfor %}
+                        ],
+                        datasets: [{
+                            label: 'Total Donations',
+                            data: [
+                                {% for donation in monthly_donations %}
+                                    {{ donation.donation_count }},
+                                {% endfor %}
+                            ],
+                            backgroundColor: '#36A2EB'
+                        }]
+                    }
+                });
+            </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Details</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #d9a941;
+            --dark-blue: #20212B;
+            --gray: #777777;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .card-custom {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border: none;
+            background-color: #f9f9f9;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto; 
+            margin-top: 20px; 
+            padding: 20px;
+        }
+
+        .carousel-inner img {
+            max-height: 400px;
+            object-fit: contain; /* Ensure the image fits inside */
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #000; /* Make icons visible */
+        }
+
+        .carousel {
+            margin-bottom: 30px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navbar -->
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="#">Edit Profile</a>
+                        <a class="dropdown-item" href="#">Change Password</a>
+                    </div>
+                </div>
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <div class="ml-auto d-flex align-items-center">
+                <div class="nav-item dropdown">
+                    <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'user_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="nav-item dropdown ml-3">
+                    <a class="nav-link" href="#" id="donorsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-hands-helping"></i> Donors
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="donorsDropdown">
+                        {% for donor in donors %}
+                        <a class="dropdown-item" href="{% url 'donor_details_page' donor.Donor_Id %}">{{ donor.UID.Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-5 pt-3">
+                <li class="nav-item">
+                    <a href="{% url 'user_dashboard' %}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'user_chat_list' %}" class="nav-link">Chat</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Orders
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="#">Check Order Status</a>
+                        <a class="dropdown-item" href="{% url 'user_request_view' %}">Applied Order Requests</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Notifications</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Leave A Comment</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9 main-content mt-5">
+            <div class="card card-custom">
+                <h4 class="text-center">{{ item.Item_Name }}</h4>
+                <p class="text-center">
+                    <strong>Donor:</strong> {{ item.Donor_Id.UID.Name }}
+                </p>
+                <!-- Carousel for item images -->
+                <div id="itemCarousel" class="carousel slide" data-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="{{ item.Image1.url }}" class="d-block w-100" alt="{{ item.Item_Name }}">
+                        </div>
+                        {% if item.Image2 %}
+                        <div class="carousel-item">
+                            <img src="{{ item.Image2.url }}" class="d-block w-100" alt="{{ item.Item_Name }}">
+                        </div>
+                        {% endif %}
+                        {% if item.Image3 %}
+                        <div class="carousel-item">
+                            <img src="{{ item.Image3.url }}" class="d-block w-100" alt="{{ item.Item_Name }}">
+                        </div>
+                        {% endif %}
+                    </div>
+                    <a class="carousel-control-prev" href="#itemCarousel" role="button" data-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#itemCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+
+                <!-- Item Details -->
+                <div class="item-details mt-3">
+                    <p><strong>Quantity:</strong> {{ item.Quantity }}</p>
+                    <p><strong>Description:</strong> {{ item.Item_Description }}</p>
+                    {% if item.Expiry_Date %}
+                    <p><strong>Expiry Date:</strong> {{ item.Expiry_Date }}</p>
+                    {% endif %}
+                    <p><strong>Donor's State:</strong> {{ state.State_Name }}</p> 
+                    <a href="{% url 'add_request' item.Item_Id %}" class="btn btn-primary">Request Item</a>
+                </div>
+            </div>
+        </div>
+        <!--comment section
+        <div class="card card-custom mt-4">
+            <h5 class="text-center">User Reviews</h5>
+            <div class="mt-3">
+                {% if comments %}
+                    {% for comment in comments %}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h6><strong>{{ comment.UID.Name }}</strong></h6>
+                                <p>{{ comment.Comment }}</p>
+                                <small class="text-muted">Posted on {{ comment.Comment_Date|date:"d M Y, H:i" }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-center text-muted">No comments yet. Be the first to leave a review!</p>
+                {% endif %}
+            </div>
+        </div>-->
+    </div>
+</div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</body>
+</html>

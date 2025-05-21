@@ -1,0 +1,210 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Requests</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- Top Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+            <div class="ml-0 d-flex align-items-center">
+                <!-- Profile Icon (Left-most side) -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="{% static 'img/default-profile.png' %}" alt="User Image" class="profile-icon">
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="profileDropdown">
+                        <a class="dropdown-item" href="#">Edit Profile</a>
+                        <a class="dropdown-item" href="#">Change Password</a>
+                    </div>
+                </div>
+                <!-- Website Name (Next to Profile Icon) -->
+                <span class="navbar-brand ml-3" style="color:white;">CareCollective</span>
+            </div>
+
+            <!-- Search Bar and Other Icons -->
+            <div class="ml-auto d-flex align-items-center">
+                <!-- Categories Icon -->
+                 <div class="nav-item dropdown">
+                     <a class="nav-link" href="#" id="categoriesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-th"></i> Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                        {% for category in categories %}
+                        <a class="dropdown-item" href="{% url 'donor_items_based_category' category.Category_Id %}">{{ category.Category_Name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Log Out Icon -->
+                <a href="{% url 'logout' %}" class="logout-icon ml-3">
+                    <i class="fas fa-sign-out-alt"></i>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sidebar -->
+        <div id="sidebar" class="col-md-3 sidebar">
+            <ul class="nav flex-column mt-4">
+                <li class="nav-item">
+                    <a href="{% url 'donor_dashboard' %}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'donor_chat_list' %}" class="nav-link">Chat</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Categories
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'add_category' %}">New Category</a>
+                        <a class="dropdown-item" href="{% url 'donor_view_category_request' %}">My Requests</a>
+                    </div>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="itemsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        New Items
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="itemsDropdown">
+                        <a class="dropdown-item" href="{% url 'add_item' %}">Add New Item</a>
+                        <a class="dropdown-item" href="{% url 'list_donated_items' %}">List of Donated Items</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'donor_manage_requests' %}" class="nav-link">User Requests</a>
+                </li>
+                <!--<li class="nav-item">
+                    <a href="{% url 'notifications' %}" class="nav-link">Notifications</a>
+                </li>-->
+                <li class="nav-item">
+                    <a href="{% url 'donor_comments_view' %}" class="nav-link">Leave A Comment</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="container-fluid">
+        <!-- Main Content -->
+                <div class="row justify-content-center align-items-center mt-5 pt-5">
+                    <div class="col-md-6 d-flex justify-content-center">
+                        <div class="box notice-board">
+                            <h4>Manage Item Requests</h4>
+                            <table class="table table-bordered table-hover">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Item Image</th>
+                                        <th>Item Name</th>
+                                        <th>User Name</th>
+                                        <th>Urgency</th>
+                                        <th>Quantity Requested</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for request in requests %}
+                                    <tr>
+                                        <td><img src="{{ request.Item_Id.Image1.url }}" alt="Item Image" class="img-thumbnail" width="100"></td>
+                                        <td>{{ request.Item_Id.Item_Name }}</td>
+                                        <td>
+                                            <!-- Button to trigger modal -->
+                                            <a href="#" class="open-modal" 
+                                                data-name="{{ request.UID.Name }}" 
+                                                data-item="{{ request.Item_Id.Item_Name }}"
+                                                data-state="{{ request.UID.State_Id.State_Name }}"
+                                                data-urgency="{{ request.Urgency }}"
+                                                data-reason="{{ request.Reason }}"
+                                                data-request-date="{{ request.Request_Date }}">
+                                                {{ request.UID.Name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ request.Urgency }}</td>
+                                        <td>{{ request.Quantity }}</td>
+                                        <td>{{ request.Status }}</td>
+                                        <td>
+                                            {% if request.Item_Id.Quantity == 0 %}
+                                            <p style="color:red;"><b>Out Of Stock</b></p>
+                                            {% elif request.Item_Id.Quantity > 0 %}
+                                              {% if request.Status == 'Pending' or request.Status == 'Rejected' %}
+                                                 <a href="{% url 'approve_request' request.Request_Id %}" class="btn btn-success">
+                                                    <i class="fas fa-check"> </i>
+                                                </a><br>
+                                                <a href="{% url 'reject_request' request.Request_Id %}" class="btn btn-danger">
+                                                    <i class="fas fa-times"></i></a>
+                                            {% else %}
+                                              <p style="color:red;"><b>{{ request.Status }}</b></p>
+                                            {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Modal -->
+            <div class="modal fade" id="userRequestModal" tabindex="-1" role="dialog" aria-labelledby="userRequestModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="userRequestModalLabel">User Request Details</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>Item Name:</strong> <span id="modal-item-name"></span></p>
+                            <p><strong>User Name:</strong> <span id="modal-user-name"></span></p>
+                            <p><strong>State:</strong> <span id="modal-state"></span></p>
+                            <p><strong>Urgency:</strong> <span id="modal-urgency"></span></p>
+                            <p><strong>Reason:</strong> <span id="modal-reason"></span></p>
+                            <p><strong>Request Date:</strong> <span id="modal-request-date"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
+    <script>
+        $(document).ready(function(){
+            // When a user name link is clicked
+            $('.open-modal').click(function(e){
+                e.preventDefault();
+
+                // Get data attributes from the clicked link
+                var itemName = $(this).data('item');
+                var userName = $(this).data('name');
+                var state = $(this).data('state');
+                var urgency = $(this).data('urgency');
+                var reason = $(this).data('reason');
+                var requestDate = $(this).data('request-date');
+
+                // Set the modal fields with the corresponding data
+                $('#modal-item-name').text(itemName);
+                $('#modal-user-name').text(userName);
+                $('#modal-state').text(state);
+                $('#modal-urgency').text(urgency);
+                $('#modal-reason').text(reason);
+                $('#modal-request-date').text(requestDate);
+
+                // Show the modal
+                $('#userRequestModal').modal('show');
+            });
+        });
+    </script>
+</body>
+</html>
