@@ -1,72 +1,63 @@
-# CareCollective
-CareCollective is a web-based platform designed to support and enhance community care initiatives. It connects volunteers, donors, and nonprofit organizations in a centralized ecosystem where they can collaborate to serve communities more efficiently. Built using Django, this project includes user management, event and donation tracking, media (photo) handling, and tools for organizing local support campaigns.
+# 💙 CareCollective
 
-🌟 Project Objectives
-Connect volunteers, donors, and NGOs through a shared digital space.
+**CareCollective** is a web-based platform designed to connect volunteers, donors, and nonprofit organizations in a unified digital space. It aims to simplify coordination, amplify impact, and promote social responsibility through event tracking, donations, volunteer listings, and photo documentation.
 
-Enable users to post and find help requests, donation needs, or volunteering opportunities.
+---
 
-Allow photo uploads for events, resource deliveries, and verification of community impact.
+## 🌟 Key Objectives
 
-Provide an admin interface for managing users, reports, and campaigns.
+- Build a centralized hub for community care efforts
+- Enable real-time coordination between donors, volunteers, and NGOs
+- Provide tools to showcase events and their impact through photo uploads
+- Offer administrative controls to manage users and content
 
-Ensure accessibility and scalability for growing community initiatives.
+---
 
-🚀 Features
-User authentication (registration, login, logout)
+## 🚀 Features
 
-Role-based access for admins, volunteers, and donors
+- 🔐 User Authentication (Sign Up / Login / Logout)
+- 🧑‍🤝‍🧑 Role-based Access: Admins, Volunteers, Donors
+- 📝 Create & Manage Campaigns and Events
+- 💰 Track Donations and Contributions
+- 🤝 Volunteer Registration & Task Listings
+- 📸 Photo Uploads for Events and Donations
+- ⚙️ Admin Dashboard for Monitoring and Approvals
+- 📱 Mobile-Responsive Frontend
 
-Campaign and event management dashboard
+---
 
-Donation tracking system
+## 🛠️ Tech Stack
 
-Volunteer opportunity listings
+### Backend
 
-Photo upload and gallery features for showcasing events and contributions
+- **Python 3.10+**
+- **Django 4.x**
+- **SQLite3** (or PostgreSQL for production)
 
-Admin panel for managing submissions and user accounts
+### Frontend
 
-Responsive and mobile-friendly interface
+- **HTML5 + CSS3**
+- **Bootstrap 5**
+- **JavaScript (Vanilla)**
 
-🛠️ Technologies Used
-The project is built using the following technologies and libraries:
+### Media Handling
 
-Backend
-Python 3.10+
+- 📷 **Pillow** — For image processing
+- 🧹 **django-cleanup** — To auto-delete unused media files
+- 🧩 **django-crispy-forms** — For styled form layouts
+- 🎛 **django-widget-tweaks** — For custom form UI
 
-Django 4.x — The main web framework
+---
 
-WAMP SERVER
+## 📂 Media & Photo Uploads
 
-Frontend
-HTML5, CSS3, Bootstrap 5 — for responsive design
+Users can upload photos for:
+- Event documentation
+- Proof of donation delivery
+- Campaign posters
 
-JavaScript (Vanilla) — for basic interactivity
+Ensure the following settings are added to `settings.py`:
 
-Media & Image Handling
-Pillow — Python Imaging Library for managing uploaded images
-
-django-cleanup — for automatic deletion of old media files
-
-django-storages (optional) — if planning to integrate AWS S3 or similar
-
-Others
-Django Crispy Forms — for elegant form rendering
-
-django-widget-tweaks — for customizing form inputs in templates
-
-📷 Media & Photo Uploads
-Users can upload images when submitting:
-
-Donation proof
-
-Event participation photos
-
-Campaign posters or flyers
-
-All uploaded media files are saved in the /media/ directory and can be managed via the admin dashboard. Make sure to set up media root and media URL correctly in your Django settings.py:
-
-python
+```python
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
