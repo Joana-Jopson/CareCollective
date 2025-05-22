@@ -22,7 +22,6 @@
 - 🤝 Volunteer Registration & Task Listings
 - 📸 Photo Uploads for Events and Donations
 - ⚙️ Admin Dashboard for Monitoring and Approvals
-- 📱 Mobile-Responsive Frontend
 
 ---
 
@@ -32,13 +31,14 @@
 
 - **Python 3.10+**
 - **Django 4.x**
-- **SQLite3** (or PostgreSQL for production)
+- **WAMP Server** 
 
 ### Frontend
 
 - **HTML5 + CSS3**
 - **Bootstrap 5**
-- **JavaScript (Vanilla)**
+- **JavaScript**
+- - **Bootstrap**
 
 ### Media Handling
 
